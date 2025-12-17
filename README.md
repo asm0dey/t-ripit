@@ -13,7 +13,7 @@ export TRIPIT_USERNAME="you@example.com"
 export TRIPIT_PASSWORD="your_password"
 # Optional: run a visible browser for debugging (default is headless)
 export TRIPIT_HEADED=true   # accepts true/1/yes/on (case-insensitive)
-# Optional: choose browser (default: chrome). Supported: chrome, chromium, firefox, edge
+# Optional: choose browser (default: chrome). Supported: chrome, firefox, edge
 export TRIPIT_BROWSER=chrome
 ```
 

@@ -26,12 +26,6 @@
             <artifactId>selenide</artifactId>
             <version>7.13.0</version>
         </dependency>
-        <!-- WebDriverManager to auto-manage browser drivers without sudo -->
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>6.3.3</version>
-        </dependency>
         <!-- Simple SLF4J backend to see logs if not provided by runtime -->
         <dependency>
             <groupId>org.slf4j</groupId>
