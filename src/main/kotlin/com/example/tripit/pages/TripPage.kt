@@ -17,7 +17,7 @@ class TripPage : BasePage() {
             .`$$`("div[data-cy=trip-timeline-section-header], div[data-cy=trip-timeline-segment]")
             .forEach {
                 if (it.getAttribute("data-cy") == "trip-timeline-section-header") {
-                    currentDate = parseDate(it.`$`("span[data-cy=timeline-header-date]").text, year)!!
+                    currentDate = parseDate(it.`$`("span[data-cy=timeline-header-date]").text, year) ?: currentDate
                 } else if (it.getAttribute("data-cy") == "trip-timeline-segment" &&
                     it.`$`("svg[aria-label='flight']").exists()
                 ) {
@@ -51,12 +51,15 @@ private val monthMap = mapOf(
 )
 
 fun parseDate(fullStr: String, year: Int): String? {
-    // parse date from text in format "Thu, Sept 18" to date, given the year from above
-    val datePattern = Regex("""\w+,\s*(\w+)\s+(\d+)""")
+    // parse date from text in format "Thu, Sept 18" or "Sat, Dec 28 2024"
+    if (fullStr == "No Date") return null
+
+    val datePattern = Regex("""\w+,\s*(\w+)\s+(\d+)(?:\s+(\d{4}))?""")
     val match = datePattern.find(fullStr) ?: return null
     val monthStr = match.groupValues[1]
     val day = match.groupValues[2].toIntOrNull() ?: return null
+    val actualYear = match.groupValues[3].toIntOrNull() ?: year
     val month = monthMap[monthStr.lowercase()] ?: return null
-    return "%04d-%02d-%02d".format(year, month, day)
+    return "%04d-%02d-%02d".format(actualYear, month, day)
 }
 

@@ -1,16 +1,13 @@
 package com.example.tripit.pages
 
 import com.codeborne.selenide.Condition.visible
-import com.codeborne.selenide.Selenide
-import com.codeborne.selenide.Selenide.`$`
-import com.codeborne.selenide.Selenide.`$$`
-import com.codeborne.selenide.Selenide.element
+import com.codeborne.selenide.Selenide.*
 import com.example.tripit.Selectors
 
 class PastTripsPage : BasePage() {
     fun open(delay: Long): PastTripsPage {
         sleep(delay)
-        Selenide.open(Selectors.PAST_TRIPS_URL)
+        open(Selectors.PAST_TRIPS_URL)
         `$`("li.p-0:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)").shouldBe(
             visible
         )
@@ -63,7 +60,7 @@ class PastTripsPage : BasePage() {
 
     fun openTrip(url: String, generateDelayMillis: Long): TripPage {
         sleep(generateDelayMillis)
-        Selenide.open(url)
+        open(url)
         `$`("div.trip-timeline-section-header:nth-child(1) > span:nth-child(1)").shouldBe(visible)
         return TripPage()
     }

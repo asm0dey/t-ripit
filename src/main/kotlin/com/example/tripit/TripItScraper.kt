@@ -3,9 +3,9 @@ package com.example.tripit
 import com.codeborne.selenide.Configuration
 import com.codeborne.selenide.Selenide
 import com.example.tripit.model.FlightSegment
+import com.example.tripit.pages.FlightDetailPage
 import com.example.tripit.pages.LoginPage
 import com.example.tripit.pages.PastTripsPage
-import com.example.tripit.pages.FlightDetailPage
 import io.github.bonigarcia.wdm.WebDriverManager
 import java.time.LocalDate
 import kotlin.random.Random.Default.nextLong
@@ -40,7 +40,10 @@ class TripItScraper(
         LoginPage().open().login(username, password, politeDelayMs)
     }
 
-    fun extractPastFlights(startDateInclusive: LocalDate? = null): List<FlightSegment> {
+    fun extractPastFlights(
+        startDateInclusive: LocalDate? = null,
+        untilDateInclusive: LocalDate? = null
+    ): Sequence<FlightSegment> {
 
         return PastTripsPage()
             .open(generateDelayMillis())
@@ -55,8 +58,11 @@ class TripItScraper(
                     .open(flightDetailUrl, generateDelayMillis())
                     .extractFlightSegment(dateOverride = headerDate)
             }
+            // Apply upper bound filter first: keep only flights on or before 'untilDateInclusive'
+            .filter { untilDateInclusive == null || LocalDate.parse(it.flightDate) <= untilDateInclusive }
+            // Preserve existing lower bound short-circuit: stop once we reach or pass the startDateInclusive
             .takeWhile { startDateInclusive == null || LocalDate.parse(it.flightDate) > startDateInclusive }
-            .toList()
+            
     }
 
     private fun generateDelayMillis(): Long = nextLong(politeDelayMs - 200, politeDelayMs + 200)
