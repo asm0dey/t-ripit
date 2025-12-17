@@ -39,7 +39,7 @@ class TripItScraper(
 
         return PastTripsPage()
             .open(generateDelayMillis())
-            .collectTripLinks()
+            .collectTripLinks(startDateInclusive, untilDateInclusive)
             .asSequence()
             .onEach { println("[INFO] Processing trip link: $it") }
             .flatMap {
@@ -47,6 +47,7 @@ class TripItScraper(
                     .open(generateDelayMillis())
                     .openTrip(it, generateDelayMillis())
                     .flightLinks()
+                    .asSequence()
                     .filter { (_, headerDate) ->
                         val parse = LocalDate.parse(headerDate)
                         (startDateInclusive == null || parse >= startDateInclusive) &&
