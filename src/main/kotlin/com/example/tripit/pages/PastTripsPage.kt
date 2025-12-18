@@ -11,11 +11,11 @@ class PastTripsPage : BasePage() {
     fun open(delay: Long): PastTripsPage {
         sleep(delay)
         open(Selectors.PAST_TRIPS_URL)
-        `$`("li.p-0:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)").shouldBe(
+        element(Selectors.TRIP_LIST_CONTAINER).shouldBe(
             visible
         )
         try {
-            element(".pagination").shouldBe(visible)
+            element(Selectors.PAGINATION_CONTAINER).shouldBe(visible)
         } catch (_: Exception) {
             System.err.println("No pagination found, won't paginate")
         }
@@ -33,13 +33,13 @@ class PastTripsPage : BasePage() {
         while (true) {
             println("[INFO] Collecting trips from Past Trips page #$pageIndex ...")
             // For early filtering, iterate over trip cards and parse the visible trip date range
-            val cards = `$$`("div.card-body > div.container").toList()
+            val cards = `$$`(Selectors.TRIP_CARD).toList()
             var addedOnThisPage = 0
             cards.forEach { card ->
-                val link = card.`$`("a.fw-bold[href*=\"/app/trips/\"]")
+                val link = card.find(Selectors.TRIP_LINK)
                 if (!link.exists()) return@forEach
                 val href = link.attr("href") ?: return@forEach
-                val dateText = card.`$`("div[data-cy=\"trip-date-span\"] > span").text()
+                val dateText = card.find(Selectors.TRIP_DATE_SPAN).text()
                 val (tripStart, tripEnd) = parseTripDateRange(dateText) ?: (null to null)
 
                 val include = if (tripStart != null && tripEnd != null) {
@@ -60,7 +60,7 @@ class PastTripsPage : BasePage() {
             println("[INFO]  - Added $addedOnThisPage filtered trip links on page #$pageIndex (from ${cards.size} cards)")
 
             val pageItems = `$$`(Selectors.PAGE_ITEM).toList()
-            val nextLi = pageItems.firstOrNull { it.`$`("li:not(.disabled) > button[aria-label=\"Go to next page\"]").exists() }
+            val nextLi = pageItems.firstOrNull { it.find(Selectors.NEXT_PAGE_BUTTON).exists() }
             if (nextLi == null) break
 
             val nextLiClass = try {
@@ -71,8 +71,8 @@ class PastTripsPage : BasePage() {
             if (nextLiClass.contains("disabled")) break
 
             try {
-                nextLi.`$`("button.page-link").click()
-                `$`(".pagination").shouldBe(visible)
+                nextLi.find(Selectors.PAGE_LINK_BUTTON).click()
+                element(Selectors.PAGINATION_CONTAINER).shouldBe(visible)
             } catch (_: Throwable) {
                 break
             }
@@ -138,7 +138,7 @@ class PastTripsPage : BasePage() {
     fun openTrip(url: String, generateDelayMillis: Long): TripPage {
         sleep(generateDelayMillis)
         open(url)
-        `$`("div.trip-timeline-section-header:nth-child(1) > span:nth-child(1)").shouldBe(visible)
+        element(Selectors.TRIP_PAGE_LOAD_INDICATOR).shouldBe(visible)
         return TripPage()
     }
 }

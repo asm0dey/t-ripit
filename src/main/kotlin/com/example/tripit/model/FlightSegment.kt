@@ -6,5 +6,7 @@ data class FlightSegment(
     val origin: String,          // IATA code e.g., SFO
     val destination: String,     // IATA code e.g., PIT
     val flightNumber: String,     // e.g., UA794
-    val flightTimeZone: String
+    val flightTimeZone: String,
+    val arriveTime: String,
+    val arriveTimeZone: String
 )

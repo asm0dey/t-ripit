@@ -1,7 +1,7 @@
 package com.example.tripit.pages
 
-import com.codeborne.selenide.Selenide.`$`
 import com.codeborne.selenide.Selenide.element
+import com.example.tripit.Selectors
 
 class TripPage : BasePage() {
     /**
@@ -13,15 +13,15 @@ class TripPage : BasePage() {
         val year = extractYear()
         var currentDate = ""
         val result = mutableListOf<Pair<String, String>>()
-        element("div[role=\"list\"]")
-            .`$$`("div[data-cy=trip-timeline-section-header], div[data-cy=trip-timeline-segment]")
+        element(Selectors.TIMELINE_LIST)
+            .`$$`(Selectors.TIMELINE_ITEMS)
             .forEach {
                 if (it.getAttribute("data-cy") == "trip-timeline-section-header") {
-                    currentDate = parseDate(it.`$`("span[data-cy=timeline-header-date]").text, year) ?: currentDate
+                    currentDate = parseDate(it.find(Selectors.TIMELINE_HEADER_DATE).text, year) ?: currentDate
                 } else if (it.getAttribute("data-cy") == "trip-timeline-segment" &&
-                    it.`$`("svg[aria-label='flight']").exists()
+                    it.find(Selectors.FLIGHT_ICON).exists()
                 ) {
-                    val link = it.`$`("a[data-cy=timeline-title]").getAttribute("href")!!
+                    val link = it.find(Selectors.TIMELINE_TITLE_LINK).getAttribute("href")!!
                     result.add(Pair(toAbsoluteUrl(link), currentDate))
                 }
             }
@@ -30,7 +30,7 @@ class TripPage : BasePage() {
 
     private fun extractYear(): Int {
         val yearPattern = Regex(""",\s*(\d{4})""")
-        val match = yearPattern.find(`$`("span.p-0:nth-child(1)").text())
+        val match = yearPattern.find(element(Selectors.TRIP_YEAR_INDICATOR).text())
         return match?.groupValues?.get(1)?.toIntOrNull()!!
     }
 }
